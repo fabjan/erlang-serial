@@ -9,11 +9,8 @@
 -export([start/1, gs_start/1, gs_init/1]).
 -export([tty_listner/1]).
 
--define(DEVICE, "/dev/ttyp6").
-
-start(Speed) ->
-%    SerialPort = serial:start([{speed,Speed}]), % roland
-    SerialPort = serial:start([{speed,Speed},{open,?DEVICE}]),
+start(Options) ->
+    SerialPort = serial:start(Options),
     spawn_link(terminal,tty_listner,[SerialPort]),
     serial_listner().
 
@@ -108,7 +105,7 @@ gs_init(Speed) ->
     gs:create(menuitem,hangup,Smnu,[{label,{text,"Hang up"}}]),
     gs:create(menuitem,disconnect,Smnu,[{label,{text,"Disconnect"}}]),
     gs:create(menuitem,connect,Smnu,[{label,{text,"Connect"}}]),
-    gs:create(menuitem,open,Smnu,[{label,{text,"Open "++?DEVICE}}]),
+%    gs:create(menuitem,open,Smnu,[{label,{text,"Open "++?DEVICE}}]),
     gs_loop(SerialPort).
 
 gs_loop(Serial) ->
@@ -153,8 +150,8 @@ gs_loop(Serial) ->
 	    Serial ! {disconnect};
 	{gs,connect,click,_Data,_Opts} ->
 	    Serial ! {connect};
-	{gs,open,click,_Data,_Opts} ->
-	    Serial ! {open,?DEVICE};
+%	{gs,open,click,_Data,_Opts} ->
+%	    Serial ! {open,?DEVICE};
 	{gs,exit,click,_Data,_Args} ->
 	    Serial ! stop,
 	    exit(normal);
